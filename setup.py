@@ -18,7 +18,7 @@ setup(
     license = "Apache 2.0",
     keywords = "example documentation tutorial",
     url = "http://packages.python.org/pynextion",
-    packages=['pynextion', 'tests'],
+    packages=['pynextion', 'signalk','tests'],
     long_description=read('README.md'),
     classifiers=[
         "Development Status :: 3 - Alpha",
