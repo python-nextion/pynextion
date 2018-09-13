@@ -1,0 +1,25 @@
+sudo : false
+
+language: python
+
+python:
+#  - 3.3
+#  - 3.4
+#  - 3.5
+  - 3.6
+#  - 3.7
+
+before_install:
+ - pip install --upgrade pip
+
+install:
+ - pip install -qq pytest flake8
+ - pip install .
+
+script:
+  - py.test
+  - flake8 --version
+  - flake8 --ignore E501 pynextion tests examples
+
+notifications:
+  email: false
