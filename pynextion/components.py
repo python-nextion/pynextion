@@ -1,106 +1,111 @@
-import serial
-import sys
-import time
-from threading import Thread
-import pynextion
+
+# pylint: disable=C0330,C0111
 
 class Component(object):
+	def __init__(self, page, comp_id, name):
+		self.page = page
+		self.comp_id = comp_id
+		self.name = name
 
-  def __init__(self,page,id,name):
-    self.page=page
-    self.id=id
-    self.name=name
+	def refresh(self):
+		self.page.nextion.refresh(self.comp_id)
+	def update_value(self):
+		pass
 
-  @staticmethod
-  def newComponentByDefinition(page, componentDefinition):
-    type=componentDefinition['type']
-    id=componentDefinition['id']
-    name=None
-    name=componentDefinition['name']
-    value=None
-    try:
-      value=componentDefinition['value']
-    except KeyError:
-      pass
 
-    if "text" in type:
-      return Text(page,id,name,value)
-    elif "number" in type:
-      return Number(page,id,name,value)
-    elif "button" in type:
-      return Button(page,id,name,value)
-    elif "gauge" in type:
-      return Gauge(page,id,name,value)
-    elif "hotspot" in type:
-      return HotSpot(page,id,name)
-    elif "waveform" in type:
-      return WaveForm(page,id,name)
-    
-    return None
+	@staticmethod
+	def new_component_by_definition(page, componentDefinition):
+		comp_type = componentDefinition['type']
+		comp_id = componentDefinition['id']
+		name = None
+		name = componentDefinition['name']
+		value = None
+		try:
+			value = componentDefinition['value']
+		except KeyError:
+			pass
+
+		if "text" in comp_type:
+			return Text(page, comp_id, name, value)
+		elif "number" in comp_type:
+			return Number(page, comp_id, name, value)
+		elif "button" in comp_type:
+			return Button(page, comp_id, name, value)
+		elif "gauge" in comp_type:
+			return Gauge(page, comp_id, name, value)
+		elif "hotspot" in comp_type:
+			return HotSpot(page, comp_id, name)
+		elif "waveform" in comp_type:
+			return WaveForm(page, comp_id, name)
+
+		return None
+
 
 class Text(Component):
+	def __init__(self, page, comp_id, name=None, value=None):
+		super(Text, self).__init__(page, comp_id, name)
 
-  def __init__(self,page,id,name=None,value=None):
-    super(Text, self).__init__(page,id,name)
-    if value is not None:
-      self.page.nextion.setText(self.id,value)
+		if value is not None:
+			self.page.nextion.set_text(self.comp_id, value)
+		else:
+			self.val_buf = self.get()
 
-  def get(self):
-    return self.page.nextion.getText(self.id)
+	def update_value(self):
+		self.page.nextion.set_text(self.comp_id, self.val_buf)
 
-  def set(self,value):
-    self.page.nextion.setText(self.id,value)
+	def get(self):
+		return self.page.nextion.get_text(self.comp_id)
+
+	def set(self, value):
+		# Cache writes
+		if value != self.val_buf:
+			self.val_buf = value
+			self.page.nextion.set_text(self.comp_id, value)
+
 
 class Number(Component):
+	def __init__(self, page, comp_id, name=None, value=None):
+		super(Number, self).__init__(page, comp_id, name)
+		if value is not None:
+			self.page.nextion.set_value(self.comp_id, value)
 
-  def __init__(self,page,id,name=None,value=None):
-    super(Number, self).__init__(page,id,name)
-    if value is not None:
-      self.page.nextion.setValue(self.id,value)
+	def get(self):
+		return self.page.nextion.get_value(self.comp_id)
 
-  def get(self):
-    return self.page.nextion.getValue(self.id)
+	def set(self, value):
+		self.page.nextion.set_value(self.comp_id, value)
 
-  def set(self,value):
-    self.page.nextion.setValue(self.id,value)
 
 class Button(Component):
+	def __init__(self, page, comp_id, name=None, value=None):
+		super(Button, self).__init__(page, comp_id, name)
+		if value is not None:
+			self.page.nextion.set_text(self.comp_id, value)
 
-  def __init__(self,page,id,name=None,value=None):
-    super(Button, self).__init__(page,id,name)
-    if value is not None:
-      self.page.nextion.setText(self.id,value)
+	def get(self):
+		return self.page.nextion.get_text(self.comp_id)
 
-  def get(self):
-    return self.page.nextion.getText(self.id)
+	def set(self, value):
+		self.page.nextion.set_text(self.comp_id, value)
 
-  def set(self,value):
-    self.page.nextion.setText(self.id,value)
 
 class HotSpot(Component):
-
-  def __init__(self,page,id,name=None):
-    super(HotSpot, self).__init__(page,id,name)
+	pass
 
 class WaveForm(Component):
+	def add(self, channel, value):
+		print(str(self.comp_id) + ":" + str(channel) + " => " + str(value))
+		self.page.nextion.nx_write("add " + self.comp_id + "," + channel + "," + value)
 
-  def __init__(self,page,id,name=None):
-    super(WaveForm, self).__init__(page,id,name)
-
-  def add(self,channel, value):
-    print str(self.id)+":"+str(channel)+" => "+str(value)
-    self.page.nextion.nxWrite("add " + self.id + "," + channel + "," + value)
 
 class Gauge(Component):
+	def __init__(self, page, comp_id, name=None, value=None):
+		super(Gauge, self).__init__(page, comp_id, name)
+		if value is not None:
+			self.page.nextion.set_value(self.comp_id, value)
 
-  def __init__(self,page,id,name=None,value=None):
-    super(Gauge, self).__init__(page,id,name)
-    if value is not None:
-      self.page.nextion.setValue(self.id,value)
+	def get(self):
+		return self.page.nextion.get_value(self.comp_id)
 
-  def get(self):
-    return self.page.nextion.getValue(self.id)
-
-  def set(self,value):
-    self.page.nextion.setValue(self.id,value)
-    
+	def set(self, value):
+		self.page.nextion.set_value(self.comp_id, value)
