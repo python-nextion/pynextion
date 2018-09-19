@@ -59,8 +59,8 @@ def test_draw(port):
             "/pynextion"
         ]
         for row in rows:
-            print(nexSerial, x, y, w, h, font, fontcolor, backcolor, xcenter, ycenter, sta, row)
-            xstr(nexSerial, x, y, w, h, font, fontcolor, backcolor, xcenter, ycenter, sta, row)
+            print(nexSerial, row, x, y, w, h, font, fontcolor, backcolor, xcenter, ycenter, sta)
+            xstr(nexSerial, row, x, y, w, h, font, fontcolor, backcolor, xcenter, ycenter, sta)
             y = y + h
             fontcolor, backcolor = swap(fontcolor, backcolor)
 

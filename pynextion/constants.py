@@ -72,6 +72,10 @@ class Colour(Enum):
     YELLOW = 65504
 
 
+BACKCOLOR_DEFAULT = Colour.WHITE
+FORECOLOR_DEFAULT = Colour.BLACK
+
+
 class Scroll:
     class Direction(Enum):
         NONE = -1

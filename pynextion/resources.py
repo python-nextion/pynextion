@@ -15,3 +15,6 @@ class Font(NexResource):
     def __init__(self, id):
         self._assert_uint8(id)
         self.id = id
+
+
+FONT_DEFAULT = Font(0)

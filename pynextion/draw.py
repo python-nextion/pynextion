@@ -1,4 +1,11 @@
-from .constants import Background, Colour
+from .constants import (
+    Background,
+    Colour,
+    Alignment,
+    BACKCOLOR_DEFAULT,
+    FORECOLOR_DEFAULT
+)
+from .resources import FONT_DEFAULT
 
 
 def _init_colour(colour):
@@ -70,10 +77,15 @@ def circle(nexSerial, x, y, r, colour=None, mode=Background.NOBACKCOLOUR):
         raise(Exception("Unsupported $mode"))
 
 
-def xstr(nexSerial, x, y, w, h, font, fontcolor, backcolor, xcenter, ycenter, sta, str):
+def xstr(nexSerial, s, x, y, w, h,
+         font=FONT_DEFAULT, fontcolor=FORECOLOR_DEFAULT, backcolor=BACKCOLOR_DEFAULT,
+         xcenter=Alignment.Horizontal.LEFT,
+         ycenter=Alignment.Vertical.UP,
+         sta=Background.SOLIDCOLOUR):
     """
     Print string on the device.
 
+    - `s`: Character content
     - `x`: x coordinate starting point;
     - `y`: y coordinate starting point;
     - `w`: area width;
@@ -84,14 +96,13 @@ def xstr(nexSerial, x, y, w, h, font, fontcolor, backcolor, xcenter, ycenter, st
     - `xcenter`: Horizontal alignment (0 is left-aligned, 1 is centered, 2 is right-aligned);
     - `ycenter`: Vertical alignment (0 is upper-aligned, 1 is centered, 2 is lower-aligned);
     - `sta`: Background fill(0-crop image;1-solid color;2-Image; 3-No backcolor, when set sta as Crop Image or Image, backcolor means image ID);
-    - `str`: Character content
     """
     # x, y, w, h = UInt16.((x, y, w, h))
     fontid = font.id
     xcenter = xcenter.value
     ycenter = ycenter.value
     sta = sta.value
-    return nexSerial.send(f"xstr {x},{y},{w},{h},{fontid},{fontcolor},{backcolor},{xcenter},{ycenter},{sta},\"{str}\"")
+    return nexSerial.send(f"xstr {x},{y},{w},{h},{fontid},{fontcolor},{backcolor},{xcenter},{ycenter},{sta},\"{s}\"")
 
 
 def line(nexSerial, x1, y1, x2, y2, colour=None):
