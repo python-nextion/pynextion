@@ -26,9 +26,6 @@ class AbstractSerialNex:
         cmd = _format_cmd(cmd)
         return self.sp.write(cmd)
 
-    def write_byte(self, b):
-        return self.sp.write(b)
-
     def init(self):
         return
 

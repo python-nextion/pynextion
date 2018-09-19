@@ -25,7 +25,7 @@ def test_NexQRCode(port):
     # text = "https://github.com/scls19fr/pynextion"
     text = "http://bit.ly/2vWS75r"
     nexText.text = text
-    # nexQRcode.textmaxlength = length(text)
+    # nexQRcode.textmaxlength = len(text)
     # nexQRcode.textmaxlength = 50
     # time.sleep(1)
     nexQRcode.text = text
